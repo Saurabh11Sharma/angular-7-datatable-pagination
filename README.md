@@ -1,13 +1,5 @@
 # Table component with sorting and pagination for Angular
-It is a forked version of [@cmglez10/ng-datatable](https://github.com/@cmglez10/ng-datatable) updated to Angular 6.
-
-## 
-
-## Installation
-
-```
-npm i angular-6-datatable --save
-```
+It is a forked version of [@cmglez10/ng-datatable](https://github.com/@cmglez10/ng-datatable) updated to Angular 7 with server and client pagination and record displaying.
 
 ## Usage example
 
@@ -31,39 +23,45 @@ export class AppModule {
 
 AppComponent.html
 ```html
-<table class="table table-striped" [mfData]="data" #mf="mfDataTable" [mfRowsOnPage]="5">
-    <thead>
-    <tr>
-        <th style="width: 20%">
-            <mfDefaultSorter by="name">Name</mfDefaultSorter>
-        </th>
-        <th style="width: 50%">
-            <mfDefaultSorter by="email">Email</mfDefaultSorter>
-        </th>
-        <th style="width: 10%">
-            <mfDefaultSorter by="age">Age</mfDefaultSorter>
-        </th>
-        <th style="width: 20%">
-            <mfDefaultSorter by="city">City</mfDefaultSorter>
-        </th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr *ngFor="let item of mf.data">
-        <td>{{item.name}}</td>
-        <td>{{item.email}}</td>
-        <td class="text-right">{{item.age}}</td>
-        <td>{{item.city | uppercase}}</td>
-    </tr>
-    </tbody>
-    <tfoot>
-    <tr>
-        <td colspan="4">
-            <mfBootstrapPaginator [rowsOnPageSet]="[5,10,25]"></mfBootstrapPaginator>
-        </td>
-    </tr>
-    </tfoot>
-</table>
+<table class="table table-striped" [mfData]="data | dataFilter : filterQuery" #mf="mfDataTable" [mfRowsOnPage]="rowsOnPage"
+                [(mfSortBy)]="sortBy" [(mfSortOrder)]="sortOrder" [mfActivePage]="activePage" (mfOnPageChange)="onPageChange($event)"
+                [mfIsServerPagination]="true" [(mfAmountOfRows)]="itemsTotal" (mfSortOrderChange)="onSortOrder($event)">
+                <thead>
+                <tr>
+                    <th style="width: 10%"></th>
+                    <th style="width: 20%">
+                        <mfDefaultSorter by="name">Name</mfDefaultSorter>
+                    </th>
+                    <th style="width: 40%">
+                        <mfDefaultSorter by="email">Email</mfDefaultSorter>
+                    </th>
+                    <th style="width: 10%">
+                        <mfDefaultSorter by="age">Age</mfDefaultSorter>
+                    </th>
+                    <th style="width: 20%">
+                        <mfDefaultSorter [by]="sortByWordLength">City</mfDefaultSorter>
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let item of mf.data">
+                    <td>
+                        <button (click)="remove(item)" class="btn btn-danger">x</button>
+                    </td>
+                    <td>{{item.name}}</td>
+                    <td>{{item.email}}</td>
+                    <td class="text-right">{{item.age}}</td>
+                    <td>{{item.city | uppercase}}</td>
+                </tr>
+                </tbody>
+                <tfoot>
+                <tr>
+                    <td colspan="5">
+                        <mfBootstrapPaginator [rowsOnPageSet]="[5,10,15]"></mfBootstrapPaginator>
+                    </td>
+                </tr>
+                </tfoot>
+            </table>
 ```
 
 ## API
@@ -78,9 +76,11 @@ AppComponent.html
    - `mfActivePage: number` - page number (default: 1)
    - `mfSortBy: any` - sort by parameter
    - `mfSortOrder: string` - sort order parameter, "asc" or "desc"
+   - `mfIsServerPagination: boolean` -default value false
  - outputs
    - `mfSortByChange: any` - sort by parameter
    - `mfSortOrderChange: any` - sort order parameter
+   - `mfOnPageChange: any` - page change parameter(rowsOnPage,activePage)
  
 ### `mfDefaultSorter` component
 
